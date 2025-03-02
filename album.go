@@ -1,3 +1,5 @@
+// this is sample service handlers when using a dictionary to store data
+
 package main
 
 import (

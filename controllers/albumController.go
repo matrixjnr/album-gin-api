@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"john.com/album-gin-api/middleware"
 	"john.com/album-gin-api/models"
 
 	"github.com/gin-gonic/gin"
@@ -29,6 +30,12 @@ func GetAlbumByID(db *gorm.DB) gin.HandlerFunc {
 
 func PostAlbums(db *gorm.DB) gin.HandlerFunc {
 	return func(c *gin.Context) {
+		// Authenticate the request
+		if err := middleware.Authenticate(c); err != nil {
+			c.JSON(401, gin.H{"message": "unauthorized"})
+			return
+		}
+
 		var newAlbum models.Album
 		if err := c.BindJSON(&newAlbum); err != nil {
 			return
@@ -40,6 +47,12 @@ func PostAlbums(db *gorm.DB) gin.HandlerFunc {
 
 func DeleteAlbumByID(db *gorm.DB) gin.HandlerFunc {
 	return func(c *gin.Context) {
+		// Authenticate the request
+		if err := middleware.Authenticate(c); err != nil {
+			c.JSON(401, gin.H{"message": "unauthorized"})
+			return
+		}
+
 		id := c.Param("id")
 		if result := db.Delete(&models.Album{}, "id = ?", id); result.Error != nil {
 			c.JSON(404, gin.H{"message": "album not found"})
